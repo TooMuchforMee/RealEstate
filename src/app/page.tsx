@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import styles from './page.module.css';
 
 // Easing / Opacity helper function
@@ -13,6 +14,7 @@ function calculateOpacityForRange(progress: number, start: number, end: number):
 export default function Home() {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
+  const [headerTheme, setHeaderTheme] = useState<'dark' | 'light'>('dark');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -189,6 +191,14 @@ export default function Home() {
       const flipContainer = flipContainerRef.current;
       if (flipContainer) {
         const rectFlip = flipContainer.getBoundingClientRect();
+
+        // Dynamically set header theme based on overlap with the cream flip section
+        if (rectFlip.top <= 0 && rectFlip.bottom >= 80) {
+          setHeaderTheme('light');
+        } else {
+          setHeaderTheme('dark');
+        }
+
         const totalHeightFlip = rectFlip.height - window.innerHeight;
         if (totalHeightFlip > 0) {
           // Progress from 0 to 1 for this section
@@ -253,6 +263,32 @@ export default function Home() {
         </div>
         <span className={styles.loaderBrand}>AURA ARCHITECTURE</span>
       </div>
+
+      {/* Header */}
+      <header className={`${styles.header} ${headerTheme === 'light' ? styles.headerLight : styles.headerDark}`}>
+        <div className={styles.headerContainer}>
+          <Link href="/" className={styles.logo}>
+            <span className={styles.logoLight}>felix</span>
+            <span className={styles.logoBold}>nieto.</span>
+          </Link>
+
+          <div className={styles.headerRight}>
+            <Link href="#footer" className={styles.contactBtn}>
+              <span>GET IN TOUCH</span>
+              <span className={styles.arrowWrapper}>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </Link>
+
+            <Link href="/menu" className={styles.menuLines} aria-label="Menu">
+              <span className={styles.line}></span>
+              <span className={styles.line}></span>
+            </Link>
+          </div>
+        </div>
+      </header>
 
       {/* Sticky Canvas Video Scroll Container */}
       <div ref={containerRef} className={styles.scrollContainer}>

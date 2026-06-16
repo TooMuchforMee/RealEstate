@@ -1,0 +1,389 @@
+.menuPage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff; /* Clean white canvas */
+  color: #000000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 999;
+}
+
+/* Header */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  background-color: transparent;
+}
+
+.headerContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: #000000;
+  text-decoration: none;
+}
+
+.logoLight {
+  font-weight: 300;
+}
+
+.logoBold {
+  font-weight: 700;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.contactBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #9abfb8; /* Sage teal */
+  color: #000000;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.contactBtn:hover {
+  background-color: #88afa8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(154, 191, 184, 0.3);
+}
+
+.arrowWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  color: #9abfb8;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.contactBtn:hover .arrowWrapper {
+  transform: translateX(2px);
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.closeBtn:hover {
+  transform: rotate(90deg);
+}
+
+/* Content Layout */
+.contentContainer {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10; /* Keep above images */
+}
+
+/* Nav Menu */
+.navMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.menuItem {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: clamp(5rem, 9vw, 9rem);
+}
+
+.menuLink {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 3D Word Cube Flip */
+.wordCube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menuItem:hover .wordCube {
+  transform: rotateX(90deg); /* Flip upwards */
+}
+
+.wordFace {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.wordFace.front {
+  transform: rotateX(0deg) translateZ(calc(clamp(5rem, 9vw, 9rem) / 2));
+}
+
+.wordFace.back {
+  /* Positioned at 90deg, offset to form top face of cube */
+  transform: rotateX(-90deg) translateZ(calc(clamp(5rem, 9vw, 9rem) / 2));
+}
+
+.sansWord {
+  font-family: var(--font-montserrat), var(--font-outfit), sans-serif;
+  font-size: clamp(3.8rem, 8vw, 8.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: #0c0c0e;
+  line-height: 0.8;
+}
+
+.serifWord {
+  font-family: var(--font-bodoni), var(--font-playfair), Georgia, serif;
+  font-size: clamp(4.2rem, 9.2vw, 9.8rem);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #0c0c0e;
+  line-height: 0.8;
+}
+
+/* Interactive Images wrapper */
+.imagesWrapper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* Let clicks pass through to links */
+  z-index: 1;
+  overflow: hidden;
+}
+
+.imageContainer {
+  position: absolute;
+  opacity: 0;
+  will-change: transform, opacity;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f3f3f3;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+}
+
+.imageContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Image Placement Coordinates */
+.leftImage {
+  left: 6%;
+  top: 50%;
+  transform: translateY(-50%) translateX(120%);
+  width: clamp(200px, 20vw, 320px);
+  aspect-ratio: 0.65;
+}
+
+.rightTopImage {
+  right: 6%;
+  top: 20%;
+  transform: translateX(120%);
+  width: clamp(220px, 22vw, 340px);
+  aspect-ratio: 1.1;
+}
+
+.rightBottomImage {
+  right: 18%;
+  bottom: 8%;
+  transform: translateX(120%);
+  width: clamp(240px, 24vw, 360px);
+  aspect-ratio: 1.35;
+}
+
+/* Active Animation States: slide in from right to left */
+.leftImage.active {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.rightTopImage.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.rightBottomImage.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Footer socials */
+.menuFooter {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.footerLabel {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: #888888;
+  text-transform: uppercase;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 16px;
+}
+
+.socialLink {
+  width: 36px;
+  height: 36px;
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.socialLink:hover {
+  transform: scale(1.1);
+  background-color: #9abfb8; /* Sage teal */
+  color: #000000;
+  box-shadow: 0 4px 10px rgba(154, 191, 184, 0.4);
+}
+
+/* Responsive Scaling */
+@media (max-width: 1024px) {
+  .leftImage {
+    left: 2%;
+    width: 18vw;
+  }
+  .rightTopImage {
+    right: 2%;
+    width: 20vw;
+  }
+  .rightBottomImage {
+    right: 8%;
+    width: 22vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 70px;
+  }
+  .headerContainer {
+    padding: 0 20px;
+  }
+  .logo {
+    font-size: 1.3rem;
+  }
+  .contactBtn {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+  }
+  .arrowWrapper {
+    width: 18px;
+    height: 18px;
+  }
+  .headerRight {
+    gap: 16px;
+  }
+
+  .sansWord {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+  }
+  
+  .serifWord {
+    font-size: clamp(2.8rem, 9vw, 4.5rem);
+  }
+  
+  .menuItem {
+    height: clamp(4rem, 8vw, 5rem);
+  }
+  
+  .wordFace.front {
+    transform: rotateX(0deg) translateZ(calc(clamp(4rem, 8vw, 5rem) / 2));
+  }
+  
+  .wordFace.back {
+    transform: rotateX(-90deg) translateZ(calc(clamp(4rem, 8vw, 5rem) / 2));
+  }
+
+  /* Hide side images on small mobile viewports for clean UI */
+  .imagesWrapper {
+    display: none;
+  }
+}

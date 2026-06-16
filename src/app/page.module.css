@@ -3,6 +3,162 @@
   width: 100%;
 }
 
+/* Header / Navigation */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: transparent; /* Always transparent to show homepage below it */
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.headerContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark theme (over dark backgrounds) - text and lines are white */
+.headerDark .logo {
+  color: #ffffff;
+}
+.headerDark .line {
+  background-color: #ffffff;
+}
+
+/* Light theme (over cream background) - text and lines are black */
+.headerLight .logo {
+  color: #000000;
+}
+.headerLight .line {
+  background-color: #000000;
+}
+
+.logoLight {
+  font-weight: 300;
+}
+
+.logoBold {
+  font-weight: 700;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.contactBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #9abfb8; /* Sage teal color */
+  color: #000000;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.contactBtn:hover {
+  background-color: #88afa8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(154, 191, 184, 0.3);
+}
+
+.arrowWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  color: #9abfb8; /* Matching sage teal */
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.contactBtn:hover .arrowWrapper {
+  transform: translateX(2px);
+}
+
+.menuLines {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 10px; /* Adjust spacing of 2 lines */
+  cursor: pointer;
+}
+
+.line {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  transition: transform 0.3s ease, background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menuLines:hover .line {
+  background-color: #88afa8; /* Change color on hover to match button */
+}
+
+.menuLines:hover .line:first-child {
+  transform: translateX(-2px);
+}
+
+.menuLines:hover .line:last-child {
+  transform: translateX(2px);
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 70px;
+  }
+  .headerContainer {
+    padding: 0 20px;
+  }
+  .logo {
+    font-size: 1.3rem;
+  }
+  .contactBtn {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    gap: 8px;
+  }
+  .arrowWrapper {
+    width: 18px;
+    height: 18px;
+  }
+  .headerRight {
+    gap: 16px;
+  }
+}
+
 /* Loading Screen */
 .loadingScreen {
   position: fixed;
