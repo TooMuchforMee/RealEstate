@@ -18,19 +18,99 @@ const projects: { id: string; title: string; image: string; category?: string }[
   { id: 'excellence', title: 'CREATIVE EXCELLENCE', image: '/menu/process_left.png' }
 ];
 
+const processSteps = [
+  {
+    id: 'insight',
+    phase: 'INSIGHT',
+    headingLine1: '– CLARITY',
+    headingLine2: 'BUILDS VALUE',
+    headingLine3: '',
+    description: 'A strategic session designed for developers seeking a clear visual concept for their project. We analyse your audience and objectives to define the visual approach for your market. Within 2 weeks you receive a concise report with the art direction, suggested deliverables, schedule and fixed quote.',
+    noteLabel: 'STRATEGY REPORT',
+    noteText: 'Get a clear visual strategy before we continue together or not.',
+    image: '/menu/process_left.png'
+  },
+  {
+    id: 'direction',
+    phase: 'DIRECTION',
+    headingLine1: 'DIRECTION –',
+    headingLine2: 'STRATEGIC',
+    headingLine3: 'PRODUCTION PLAN',
+    description: 'Building on the Visual Strategy Report, we turn the agreed direction into a structured production plan. We define the required materials, creative direction, milestones, review points and delivery structure before production begins.',
+    noteLabel: 'PRODUCTION ROADMAP',
+    noteText: 'Get a clear framework that aligns the full process from the start.',
+    image: '/menu/process_rt.png'
+  },
+  {
+    id: 'delivery',
+    phase: 'DELIVERY',
+    headingLine1: 'DELIVERY –',
+    headingLine2: 'UNCOMPROMISING',
+    headingLine3: 'QUALITY',
+    description: 'We produce the property film, still imagery and interactive experiences according to the approved plan. Every detail is carefully crafted, refined and reviewed to ensure a premium finish that stands out and connects with your target audience.',
+    noteLabel: 'FINAL DELIVERABLES',
+    noteText: 'Receive high-end marketing assets ready to launch your sales campaign.',
+    image: '/menu/process_rb.png'
+  }
+];
+
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerRef2 = useRef<HTMLDivElement>(null);
   const containerRef3 = useRef<HTMLDivElement>(null);
+  const containerRef4 = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollProgress2, setScrollProgress2] = useState(0);
   const [scrollProgress3, setScrollProgress3] = useState(0);
+  const [scrollProgress4, setScrollProgress4] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   const desc1Words = desc1Text.split(' ');
   const desc2Words = desc2Text.split(' ');
   const showcaseWords = showcaseText.split(' ');
 
   const activeIdx = Math.min(projects.length - 1, Math.floor(scrollProgress3 * projects.length));
+
+  let activeStepIdx = 0;
+  if (scrollProgress4 >= 0.75) {
+    activeStepIdx = 2;
+  } else if (scrollProgress4 >= 0.25) {
+    activeStepIdx = 1;
+  }
+
+  const translateDistance = isMobile ? scrollProgress4 * 2 * 100 : scrollProgress4 * 2 * 58;
+  const startOffset = isMobile ? '10vw' : '8vw';
+
+  const getStepOpacity = (idx: number, progress: number) => {
+    if (idx === 0) {
+      if (progress <= 0.15) return 1;
+      if (progress >= 0.45) return 0;
+      return 1 - (progress - 0.15) / 0.30;
+    } else if (idx === 1) {
+      if (progress < 0.15) return 0;
+      if (progress >= 0.15 && progress < 0.45) {
+        return (progress - 0.15) / 0.30;
+      }
+      if (progress >= 0.45 && progress <= 0.65) return 1;
+      if (progress > 0.65 && progress < 0.95) {
+        return 1 - (progress - 0.65) / 0.30;
+      }
+      return 0;
+    } else {
+      if (progress < 0.65) return 0;
+      if (progress >= 0.65 && progress < 0.95) {
+        return (progress - 0.65) / 0.30;
+      }
+      return 1;
+    }
+  };
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,6 +146,17 @@ export default function AboutPage() {
           setScrollProgress3(progress);
         }
       }
+
+      // Container 4 progress
+      const container4 = containerRef4.current;
+      if (container4) {
+        const rect = container4.getBoundingClientRect();
+        const totalHeight = rect.height - window.innerHeight;
+        if (totalHeight > 0) {
+          const progress = Math.max(0, Math.min(1, -rect.top / totalHeight));
+          setScrollProgress4(progress);
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -73,6 +164,8 @@ export default function AboutPage() {
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+
 
   // Calculate word-by-word translateY for Description 1 (falling down to disappear)
   const getWordTranslateYDesc1 = (index: number) => {
@@ -310,6 +403,92 @@ export default function AboutPage() {
               ))}
             </div>
 
+          </div>
+
+        </div>
+      </div>
+
+      {/* SECTION 4: Process Slider */}
+      <div ref={containerRef4} className={styles.scrollTrack4}>
+        <div className={styles.stickyContent4}>
+          
+          {/* Center Stationary Image Wrapper */}
+          <div className={styles.processImageWrapper}>
+            {processSteps.map((step, idx) => (
+              <div
+                key={`pimg-${step.id}`}
+                className={`${styles.processImg} ${activeStepIdx === idx ? styles.activeProcessImg : ''}`}
+                style={{ backgroundImage: `url(${step.image})` }}
+              />
+            ))}
+          </div>
+
+          {/* Horizontally sliding text row */}
+          <div 
+            className={styles.processTextRow}
+            style={{ transform: `translateX(calc(${startOffset} - ${translateDistance}vw))` }}
+          >
+            {processSteps.map((step, idx) => (
+              <div 
+                key={`ptext-${step.id}`} 
+                className={styles.processTextCol}
+                style={{ opacity: getStepOpacity(idx, scrollProgress4) }}
+              >
+                <h2 className={styles.processHeading}>
+                  {step.headingLine1}
+                  <br />
+                  {step.headingLine2}
+                  {step.headingLine3 && (
+                    <>
+                      <br />
+                      {step.headingLine3}
+                    </>
+                  )}
+                </h2>
+                <p className={styles.processDesc}>{step.description}</p>
+                <p className={styles.processNote}>
+                  <strong>{step.noteLabel}:</strong> {step.noteText}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Progress bar at the bottom */}
+          <div className={styles.progressBarContainer}>
+            <div className={styles.progressLabels}>
+              <span className={`${styles.progressLabel} ${activeStepIdx < 2 ? styles.activeLabel : ''}`}>
+                INSIGHT
+                {activeStepIdx < 2 && (
+                  <svg className={styles.handDrawCircle} viewBox="0 0 100 40">
+                    <path 
+                      d="M5,20 C5,5 95,5 95,20 C95,35 5,35 5,20 Z" 
+                      fill="none" 
+                      stroke="#9abfb8" 
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span className={`${styles.progressLabel} ${activeStepIdx === 2 ? styles.activeLabel : ''}`}>
+                DELIVERY
+                {activeStepIdx === 2 && (
+                  <svg className={styles.handDrawCircle} viewBox="0 0 100 40">
+                    <path 
+                      d="M5,20 C5,5 95,5 95,20 C95,35 5,35 5,20 Z" 
+                      fill="none" 
+                      stroke="#9abfb8" 
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                )}
+              </span>
+            </div>
+            <div className={styles.progressTrack}>
+              <div 
+                className={styles.progressFill} 
+                style={{ width: `${scrollProgress4 * 100}%` }}
+              />
+            </div>
           </div>
 
         </div>

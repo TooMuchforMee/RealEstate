@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from './page.module.css';
 
 // Easing / Opacity helper function
@@ -10,8 +12,32 @@ function calculateOpacityForRange(progress: number, start: number, end: number):
   const t = (progress - start) / (end - start);
   return Math.sin(t * Math.PI); // Perfect sine-wave fade-in and fade-out
 }
+const showcaseProjects = [
+  {
+    id: 'kensho',
+    name: 'KENSHO',
+    bgImage: '/menu/work_left.png',
+    videoSrc: '/videos/kensho.mp4',
+    details: ['CREATIVE DIRECTION', '& FILM PRODUCTION', '2024']
+  },
+  {
+    id: 'panoramah',
+    name: 'PANORAMAH',
+    bgImage: '/menu/work_rt.png',
+    videoSrc: '/videos/panoramah.mp4',
+    details: ['CREATIVE DIRECTION', '& FILM PRODUCTION', '2024']
+  },
+  {
+    id: 'solheaven',
+    name: 'SOLHEAVEN',
+    bgImage: '/menu/work_rb.png',
+    videoSrc: '/videos/solheaven.mp4',
+    details: ['CREATIVE DIRECTION', '& FILM PRODUCTION', '2025']
+  }
+];
 
 export default function Home() {
+  const router = useRouter();
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
   const [headerTheme, setHeaderTheme] = useState<'dark' | 'light'>('dark');
@@ -33,6 +59,17 @@ export default function Home() {
   const flipWord2Ref = useRef<HTMLDivElement>(null);
   const flipWord3Ref = useRef<HTMLDivElement>(null);
 
+  // Showcase section refs
+  const containerRefShowcase = useRef<HTMLDivElement>(null);
+  const videoCursorRef = useRef<HTMLAnchorElement>(null);
+  const lastMouseYRef = useRef<number>(0);
+
+  // Showcase section states
+  const [scrollProgressShowcase, setScrollProgressShowcase] = useState(0);
+  const [hoveredProjectIdx, setHoveredProjectIdx] = useState(0);
+  const [isHoveringShowcase, setIsHoveringShowcase] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   // Preload all 238 images
   useEffect(() => {
     const totalFrames = 238;
@@ -40,7 +77,7 @@ export default function Home() {
     const loadedImages: HTMLImageElement[] = new Array(totalFrames);
 
     for (let i = 1; i <= totalFrames; i++) {
-      const img = new Image();
+      const img = new window.Image();
       const frameNum = String(i).padStart(3, '0');
       img.src = `/frames/ezgif-frame-${frameNum}.jpg`;
 
@@ -253,6 +290,97 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [imagesLoaded, drawFrame]);
 
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Scroll listener for Showcase
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = containerRefShowcase.current;
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        const totalHeight = rect.height - window.innerHeight;
+        if (totalHeight > 0) {
+          const progress = Math.max(0, Math.min(1, -rect.top / totalHeight));
+          setScrollProgressShowcase(progress);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Update hovered index based on scroll changes
+  useEffect(() => {
+    if (!isHoveringShowcase || isMobile) return;
+
+    const vh = window.innerHeight;
+    const panel1Progress = Math.max(0, Math.min(1, scrollProgressShowcase / 0.5));
+    const panel2Progress = Math.max(0, Math.min(1, (scrollProgressShowcase - 0.5) / 0.5));
+
+    const y1 = (1 - panel1Progress) * vh;
+    const y2 = (1 - panel2Progress) * vh;
+
+    const y = lastMouseYRef.current;
+
+    let currentHovered = 0;
+    if (y >= y2) {
+      currentHovered = 2;
+    } else if (y >= y1) {
+      currentHovered = 1;
+    } else {
+      currentHovered = 0;
+    }
+
+    if (hoveredProjectIdx !== currentHovered) {
+      setHoveredProjectIdx(currentHovered);
+    }
+  }, [scrollProgressShowcase, isHoveringShowcase, hoveredProjectIdx, isMobile]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    lastMouseYRef.current = y;
+
+    if (videoCursorRef.current) {
+      const width = videoCursorRef.current.offsetWidth || 400;
+      const height = videoCursorRef.current.offsetHeight || 250;
+      videoCursorRef.current.style.left = `${x - width / 2}px`;
+      videoCursorRef.current.style.top = `${y - height / 2}px`;
+    }
+
+    const vh = rect.height;
+    const panel1Progress = Math.max(0, Math.min(1, scrollProgressShowcase / 0.5));
+    const panel2Progress = Math.max(0, Math.min(1, (scrollProgressShowcase - 0.5) / 0.5));
+
+    const y1 = (1 - panel1Progress) * vh;
+    const y2 = (1 - panel2Progress) * vh;
+
+    let currentHovered = 0;
+    if (y >= y2) {
+      currentHovered = 2;
+    } else if (y >= y1) {
+      currentHovered = 1;
+    } else {
+      currentHovered = 0;
+    }
+
+    if (hoveredProjectIdx !== currentHovered) {
+      setHoveredProjectIdx(currentHovered);
+    }
+  };
+
   return (
     <main className={styles.main}>
       {/* Loading preloader screen */}
@@ -350,141 +478,109 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Premium Heroio Showcase Section */}
-      <section className={styles.heroioSection}>
-        <div className={styles.sectionContainer}>
-          
-          {/* Header */}
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionSubtitle}>The Philosophy</span>
-            <h2 className={styles.sectionTitle}>
-              Pure Space. <span>Organic Architecture.</span>
-            </h2>
-            <p className={styles.sectionDesc}>
-              Aura represents the integration of natural raw elements and soft geometries. A residential masterpiece built for quietness, sensory experience, and architectural flow.
-            </p>
-          </div>
 
-          {/* Features Grid */}
-          <div className={styles.grid}>
-            
-            {/* Card 1 */}
-            <div className={styles.card}>
-              <div className={styles.cardIcon}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-                </svg>
-              </div>
-              <h3 className={styles.cardTitle}>Monolithic Curves</h3>
-              <p className={styles.cardDesc}>
-                Architectural structures designed as a singular, flowing concrete monument. Structural lines merge seamlessly with raw plaster to form organic living cavities.
-              </p>
-            </div>
+      {/* SECTION 5: Project Showcase Stack */}
+      <div ref={containerRefShowcase} className={styles.scrollTrack5}>
+        <div 
+          className={styles.stickyContent5}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHoveringShowcase(true)}
+          onMouseLeave={() => setIsHoveringShowcase(false)}
+        >
+          {/* Project Panels */}
+          {showcaseProjects.map((proj, idx) => {
+            let style = {};
+            if (!isMobile) {
+              if (idx === 1) {
+                const panel1Progress = Math.max(0, Math.min(1, scrollProgressShowcase / 0.5));
+                style = { transform: `translateY(calc(100vh - ${panel1Progress * 100}vh))` };
+              } else if (idx === 2) {
+                const panel2Progress = Math.max(0, Math.min(1, (scrollProgressShowcase - 0.5) / 0.5));
+                style = { transform: `translateY(calc(100vh - ${panel2Progress * 100}vh))` };
+              }
+            }
 
-            {/* Card 2 */}
-            <div className={styles.card}>
-              <div className={styles.cardIcon}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122l9.37-9.37m0 0l-1.06-1.06a1.5 1.5 0 00-2.122 0L6.794 15.602a2.25 2.25 0 01-1.053.608l-1.442.36a.75.75 0 00-.902-.903l.36-1.443a2.25 2.25 0 01.608-1.052l9.37-9.37m9.37 0l1.06 1.06a1.5 1.5 0 010 2.122l-9.37 9.37m-2.125-2.125l-.75-.75" />
-                </svg>
-              </div>
-              <h3 className={styles.cardTitle}>Bespoke Craftsmanship</h3>
-              <p className={styles.cardDesc}>
-                Every surface features hand-applied micro-cement plaster. The organic stone coffee table is meticulously hand-sculpted from solid, local travertine.
-              </p>
-            </div>
+            return (
+              <Link 
+                key={proj.id} 
+                href={`/projects/${proj.id}`}
+                className={`${styles.projectPanel} ${styles[`panel${idx}`]}`}
+                style={style}
+              >
+                {/* Blurred Background Image */}
+                <div 
+                  className={styles.panelBg}
+                  style={{ backgroundImage: `url(${proj.bgImage})` }}
+                />
+                <div className={styles.panelBgOverlay} />
 
-            {/* Card 3 */}
-            <div className={styles.card}>
-              <div className={styles.cardIcon}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                </svg>
-              </div>
-              <h3 className={styles.cardTitle}>Light & Shadow</h3>
-              <p className={styles.cardDesc}>
-                High-aperture, floor-to-ceiling sliding glass panels bridge the boundary between raw concrete and daylight, painting dynamic shadows across the interiors.
-              </p>
-            </div>
+                {/* Panel Content Overlay */}
+                <div className={styles.panelContent}>
+                  <h2 className={styles.projectName}>{proj.name}</h2>
+                  
+                  {/* Inline Video for Mobile (Option A) */}
+                  {isMobile && (
+                    <div className={styles.inlineVideoContainer}>
+                      <div className={styles.inlineVideoFrame}>
+                        <div className={styles.inlineBorderTop}>VIEW PROJECT</div>
+                        <div className={styles.inlineBorderBottom}>VIEW PROJECT</div>
+                        <div className={styles.inlineBorderLeft}>VIEW PROJECT</div>
+                        <div className={styles.inlineBorderRight}>VIEW PROJECT</div>
+                        <video 
+                          src={proj.videoSrc}
+                          className={styles.inlineVideo}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
+                      </div>
+                    </div>
+                  )}
 
-          </div>
-
-          {/* Split Detail Showcase */}
-          <div className={styles.splitShowcase}>
-            
-            {/* Content side */}
-            <div className={styles.showcaseContent}>
-              <h3 className={styles.showcaseTitle}>
-                Sculpting the <span>Atmosphere.</span>
-              </h3>
-              <p className={styles.sectionDesc}>
-                Beyond visual luxury, Aura is engineered for silence and tactile warmth. The acoustic design reduces echo using porous stone plaster, while underfloor thermal concrete maintains natural comfort.
-              </p>
-
-              <div className={styles.showcaseFeatureList}>
-                
-                <div className={styles.featureItem}>
-                  <div className={styles.featureBullet}></div>
-                  <div className={styles.featureText}>
-                    <h4>Tactile Plaster Finishes</h4>
-                    <p>Washed plaster with organic pigment tones that shift colors under natural solar arcs.</p>
+                  <div className={styles.projectDetails}>
+                    {proj.details.map((line, lIdx) => (
+                      <div key={lIdx}>{line}</div>
+                    ))}
                   </div>
                 </div>
+              </Link>
+            );
+          })}
 
-                <div className={styles.featureItem}>
-                  <div className={styles.featureBullet}></div>
-                  <div className={styles.featureText}>
-                    <h4>Frameless Glass Portals</h4>
-                    <p>Minimalist track systems embedded directly into the concrete floor and ceiling plates.</p>
-                  </div>
-                </div>
-
-                <div className={styles.featureItem}>
-                  <div className={styles.featureBullet}></div>
-                  <div className={styles.featureText}>
-                    <h4>Stone Curations</h4>
-                    <p>Curated travertine and limestone blocks that anchor the room with natural weight.</p>
-                  </div>
-                </div>
-
+          {/* Floating Video Cursor for Desktop */}
+          {!isMobile && (
+            <Link 
+              href={`/projects/${showcaseProjects[hoveredProjectIdx].id}`}
+              ref={videoCursorRef} 
+              className={`${styles.videoCursor} ${isHoveringShowcase ? styles.activeVideoCursor : ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push(`/projects/${showcaseProjects[hoveredProjectIdx].id}`);
+              }}
+            >
+              <div className={styles.borderTop}>VIEW PROJECT</div>
+              <div className={styles.borderBottom}>VIEW PROJECT</div>
+              <div className={styles.borderLeft}>VIEW PROJECT</div>
+              <div className={styles.borderRight}>VIEW PROJECT</div>
+              <div className={styles.videoInner}>
+                {showcaseProjects.map((proj, idx) => (
+                  <video
+                    key={`vid-${proj.id}`}
+                    src={proj.videoSrc}
+                    className={`${styles.cursorVideo} ${hoveredProjectIdx === idx ? styles.activeVideo : ''}`}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ))}
               </div>
-            </div>
-
-            {/* Glowing Graphic Side */}
-            <div className={styles.glassShowcaseBox}>
-              <div className={styles.glassShowcaseInner}>
-                <span className={styles.glassGlowNumber}>238</span>
-                <span className={styles.glassLabel}>Animation Frames</span>
-                <p className={styles.cardDesc}>
-                  A fluid, cinematic sequence capturing the dialogue between raw structural lines, curves, and soft daylight.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Dynamic Stats Grid */}
-          <div className={styles.statsContainer}>
-            <div className={styles.statItem}>
-              <span className={styles.statVal}>320 m²</span>
-              <span className={styles.statLabel}>Living Space</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statVal}>4.8 m</span>
-              <span className={styles.statLabel}>Ceiling Height</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statVal}>01</span>
-              <span className={styles.statLabel}>Masterpiece</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statVal}>100%</span>
-              <span className={styles.statLabel}>Sustainable Elements</span>
-            </div>
-          </div>
-
+            </Link>
+          )}
         </div>
-      </section>
+      </div>
+
 
       {/* Sleek Footer */}
       <footer className={styles.footer}>
