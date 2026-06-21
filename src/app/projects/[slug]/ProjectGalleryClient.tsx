@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { ReactLenis } from "lenis/react";
 import Image from "next/image";
 import styles from "./projects.module.css";
 
@@ -67,29 +66,29 @@ export default function ProjectGalleryClient({ images, projectName }: ProjectGal
   }, [images]);
 
   return (
-    <ReactLenis root>
-      <section
-        ref={sectionRef}
-        style={{ height: `${SCROLL_MULTIPLIER * 100}vh` }}
-        className={styles.stackedSection}
-      >
-        {/* Sticky viewport — stays in place while section scrolls */}
-        <div className={styles.stickyViewport}>
+    <section
+      ref={sectionRef}
+      style={{ height: `${SCROLL_MULTIPLIER * 100}vh` }}
+      className={styles.stackedSection}
+    >
+      {/* Sticky viewport — stays in place while section scrolls */}
+      <div className={styles.stickyViewport}>
 
-          {/* Card stack */}
-          <div className={styles.cardStackContainer}>
-            {images.map((imgSrc, i) => (
-              <div
-                key={i}
-                ref={(el) => { cardRefs.current[i] = el; }}
-                className={styles.stackedCard}
-                style={{
-                  // Initial position: cards behind are pushed down + scaled down
-                  transform: `translateY(${(images.length - 1 - i) * OFFSET_PER_CARD}px) scale(${1 - (images.length - 1 - i) * SCALE_PER_CARD})`,
-                  zIndex: i + 1,
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
-                }}
-              >
+        {/* Card stack */}
+        <div className={styles.cardStackContainer}>
+          {images.map((imgSrc, i) => (
+            <div
+              key={i}
+              ref={(el) => { cardRefs.current[i] = el; }}
+              className={styles.stackedCard}
+              style={{
+                // Initial position: cards behind are pushed down + scaled down
+                transform: `translateY(${(images.length - 1 - i) * OFFSET_PER_CARD}px) scale(${1 - (images.length - 1 - i) * SCALE_PER_CARD})`,
+                zIndex: i + 1,
+                boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
+              }}
+            >
+              <div className={styles.cardHoverWrapper}>
                 <Image
                   src={imgSrc}
                   alt={`${projectName} Detail ${i + 1}`}
@@ -99,15 +98,15 @@ export default function ProjectGalleryClient({ images, projectName }: ProjectGal
                   priority={i === 0}
                 />
               </div>
-            ))}
-          </div>
-
-          {/* Scroll hint */}
-          <p className={styles.scrollHint}>
-            scroll ↓
-          </p>
+            </div>
+          ))}
         </div>
-      </section>
-    </ReactLenis>
+
+        {/* Scroll hint */}
+        <p className={styles.scrollHint}>
+          scroll ↓
+        </p>
+      </div>
+    </section>
   );
 }

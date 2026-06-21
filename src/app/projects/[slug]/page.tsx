@@ -1,13 +1,10 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from './projects.module.css';
-import ProjectGalleryClient from './ProjectGalleryClient';
+import ProjectDetailClient from './ProjectDetailClient';
 
 const projectDetails = {
   kensho: {
     name: 'KENSHO',
-    videoSrc: '/videos/kensho.mp4',
+    videoSrc: '/amazon%20IQ/project%201.mp4',
     images: [
       '/menu/work_left.png',
       '/menu/process_left.png',
@@ -16,7 +13,7 @@ const projectDetails = {
   },
   panoramah: {
     name: 'PANORAMAH',
-    videoSrc: '/videos/panoramah.mp4',
+    videoSrc: '/amazon%20IQ/project%202.mp4',
     images: [
       '/menu/work_rt.png',
       '/menu/process_rt.png',
@@ -25,7 +22,7 @@ const projectDetails = {
   },
   solheaven: {
     name: 'SOLHEAVEN',
-    videoSrc: '/videos/solheaven.mp4',
+    videoSrc: '/amazon%20IQ/project%203.mp4',
     images: [
       '/menu/work_rb.png',
       '/menu/process_rb.png',
@@ -54,72 +51,5 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return (
-    <div className={styles.projectPageWrapper}>
-      {/* Floating absolute header */}
-      <header className={styles.header}>
-        <div className={styles.headerContainer}>
-          <Link href="/" className={styles.logo}>
-            <span className={styles.logoLight}>felix</span>
-            <span className={styles.logoBold}>nieto.</span>
-          </Link>
-
-          <div className={styles.headerRight}>
-            <Link href="/#footer" className={styles.contactBtn}>
-              <span className={styles.flipText}>
-                <span className={styles.flipCube}>
-                  <span className={styles.flipFront}>GET IN TOUCH</span>
-                  <span className={styles.flipBack}>GET IN TOUCH</span>
-                </span>
-              </span>
-              <span className={styles.arrowWrapper}>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-            </Link>
-
-            <Link href="/menu" className={styles.menuLines} aria-label="Menu">
-              <span className={styles.line}></span>
-              <span className={styles.line}></span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* HERO SECTION: Full-width background video with large title */}
-      <section className={styles.heroContainer}>
-        <video
-          src={project.videoSrc}
-          className={styles.bgVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-        <div className={styles.videoOverlay} />
-        
-        <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>{project.name}</h1>
-        </div>
-      </section>
-
-      {/* GALLERY SECTION: Interactive sticky stacked card gallery */}
-      <ProjectGalleryClient images={project.images} projectName={project.name} />
-
-      {/* Site Footer */}
-      <footer className={styles.footer}>
-        <div className={styles.footerContainer}>
-          <div className={styles.footerLogo}>A U R A</div>
-          <div className={styles.footerLinks}>
-            <Link href="/#philosophy">Architecture</Link>
-            <Link href="/#spaces">Spaces</Link>
-            <Link href="/#materiality">Materiality</Link>
-            <Link href="/#footer">Contact</Link>
-          </div>
-          <p className={styles.copyright}>© 2026 Aura Architecture. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  );
+  return <ProjectDetailClient project={project} />;
 }

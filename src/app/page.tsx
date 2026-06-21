@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './page.module.css';
+import { gsap } from 'gsap';
 
 // Easing / Opacity helper function
 function calculateOpacityForRange(progress: number, start: number, end: number): number {
@@ -17,21 +18,21 @@ const showcaseProjects = [
     id: 'kensho',
     name: 'KENSHO',
     bgImage: '/menu/work_left.png',
-    videoSrc: '/videos/kensho.mp4',
+    videoSrc: '/amazon%20IQ/project%201.mp4',
     details: ['CREATIVE DIRECTION', '& FILM PRODUCTION', '2024']
   },
   {
     id: 'panoramah',
     name: 'PANORAMAH',
     bgImage: '/menu/work_rt.png',
-    videoSrc: '/videos/panoramah.mp4',
+    videoSrc: '/amazon%20IQ/project%202.mp4',
     details: ['CREATIVE DIRECTION', '& FILM PRODUCTION', '2024']
   },
   {
     id: 'solheaven',
     name: 'SOLHEAVEN',
     bgImage: '/menu/work_rb.png',
-    videoSrc: '/videos/solheaven.mp4',
+    videoSrc: '/amazon%20IQ/project%203.mp4',
     details: ['CREATIVE DIRECTION', '& FILM PRODUCTION', '2025']
   }
 ];
@@ -115,6 +116,15 @@ export default function Home() {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
   const [headerTheme, setHeaderTheme] = useState<'dark' | 'light'>('dark');
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -146,6 +156,7 @@ export default function Home() {
 
   // Testimonials refs and state
   const testimonialsSectionRef = useRef<HTMLDivElement>(null);
+  const testimonialsGridRef = useRef<HTMLDivElement>(null);
   const [testimonialsInView, setTestimonialsInView] = useState(false);
 
   // Preload all 238 images
@@ -411,6 +422,45 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // GSAP reveals for Testimonials header and cards
+  useEffect(() => {
+    const testimonialsHeader = testimonialsSectionRef.current?.querySelector(`.${styles.testimonialsHeader}`);
+    if (testimonialsHeader) {
+      gsap.fromTo(testimonialsHeader.querySelectorAll('h2'),
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          stagger: 0.15,
+          ease: 'power4.out',
+          scrollTrigger: {
+            trigger: testimonialsHeader,
+            start: 'top 85%',
+          }
+        }
+      );
+    }
+
+    if (testimonialsGridRef.current) {
+      gsap.fromTo(testimonialsGridRef.current.children,
+        { opacity: 0, y: 60, scale: 0.98 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: testimonialsGridRef.current,
+            start: 'top 85%',
+          }
+        }
+      );
+    }
+  }, []);
+
   // Update hovered index based on scroll changes
   useEffect(() => {
     if (!isHoveringShowcase || isMobile) return;
@@ -486,7 +536,7 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header className={`${styles.header} ${headerTheme === 'light' ? styles.headerLight : styles.headerDark}`}>
+      <header className={`${styles.header} ${headerTheme === 'light' ? styles.headerLight : styles.headerDark} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.headerContainer}>
           <Link href="/" className={styles.logo}>
             <span className={styles.logoLight}>felix</span>
@@ -722,7 +772,7 @@ export default function Home() {
           <h2 className={styles.testimonialsTitleSans}>SAY ABOUT ME</h2>
         </div>
 
-        <div className={styles.testimonialsGrid}>
+        <div ref={testimonialsGridRef} className={styles.testimonialsGrid}>
           {testimonials.map((testimonial) => (
             <div key={testimonial.id} className={styles.testimonialCard}>
               <div className={styles.testimonialContent}>

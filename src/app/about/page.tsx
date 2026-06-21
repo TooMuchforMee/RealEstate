@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './about.module.css';
+import { gsap } from 'gsap';
 
 const desc1Text = `I'm Félix Nieto, architect by background and creative director by practice. Over the last decade, I have helped architecture teams and real estate developers present and sell high-end residential projects through property films, still imagery and interactive experiences for off-plan campaigns.`;
 const desc2Text = `I quickly learned that in luxury real estate, first impressions are everything. Buyers and investors form their perception of a project in seconds. That perception either builds value or undermines it. The real difference lies in strategic visual direction. That is where I come in.`;
@@ -59,11 +60,23 @@ export default function AboutPage() {
   const containerRef2 = useRef<HTMLDivElement>(null);
   const containerRef3 = useRef<HTMLDivElement>(null);
   const containerRef4 = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const portraitColRef = useRef<HTMLDivElement>(null);
+  const processHeaderRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollProgress2, setScrollProgress2] = useState(0);
   const [scrollProgress3, setScrollProgress3] = useState(0);
   const [scrollProgress4, setScrollProgress4] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const desc1Words = desc1Text.split(' ');
   const desc2Words = desc2Text.split(' ');
@@ -165,6 +178,51 @@ export default function AboutPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // GSAP scroll reveals
+  useEffect(() => {
+    if (headingRef.current) {
+      gsap.fromTo(headingRef.current.querySelectorAll('span'),
+        { opacity: 0, y: 45 },
+        { opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: 'power4.out', delay: 0.2 }
+      );
+    }
+
+    if (portraitColRef.current) {
+      gsap.fromTo(portraitColRef.current,
+        { opacity: 0, scale: 0.96, y: 50 },
+        { opacity: 1, scale: 1, y: 0, duration: 1.4, ease: 'power3.out', delay: 0.5 }
+      );
+    }
+
+    if (processHeaderRef.current) {
+      gsap.fromTo(processHeaderRef.current.querySelector(`.${styles.processTitle}`),
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: processHeaderRef.current,
+            start: 'top 85%',
+          }
+        }
+      );
+      gsap.fromTo(processHeaderRef.current.querySelector(`.${styles.processLine}`),
+        { scaleX: 0, transformOrigin: 'left center' },
+        {
+          scaleX: 1,
+          duration: 1.5,
+          ease: 'power3.inOut',
+          scrollTrigger: {
+            trigger: processHeaderRef.current,
+            start: 'top 85%',
+          }
+        }
+      );
+    }
+  }, []);
+
 
 
   // Calculate word-by-word translateY for Description 1 (falling down to disappear)
@@ -219,7 +277,7 @@ export default function AboutPage() {
       <div ref={containerRef} className={styles.scrollTrack}>
         <div className={styles.stickyContent}>
           {/* Header */}
-          <header className={styles.header}>
+          <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
             <div className={styles.headerContainer}>
               <Link href="/" className={styles.logo}>
                 <span className={styles.logoLight}>felix</span>
@@ -246,7 +304,7 @@ export default function AboutPage() {
 
           {/* Main Layout Grid */}
           <div className={styles.mainContent}>
-            <h1 className={styles.heading}>
+            <h1 ref={headingRef} className={styles.heading}>
               <span className={styles.sansWord}>I DON&apos;T MAKE </span>
               <span className={styles.serifWord}>RENDERS.</span>
               <br />
@@ -258,7 +316,7 @@ export default function AboutPage() {
 
             <div className={styles.columns}>
               {/* Column 1: Portrait */}
-              <div className={styles.portraitCol}>
+              <div ref={portraitColRef} className={styles.portraitCol}>
                 <div className={styles.imageWrapper}>
                   <Image 
                     src="/about_portrait.png" 
@@ -413,7 +471,7 @@ export default function AboutPage() {
         <div className={styles.stickyContent4}>
           
           {/* Section Title and Line */}
-          <div className={styles.processHeader}>
+          <div ref={processHeaderRef} className={styles.processHeader}>
             <h2 className={styles.processTitle}>MY PROCESS</h2>
             <div className={styles.processLine}></div>
           </div>

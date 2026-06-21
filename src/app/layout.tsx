@@ -30,6 +30,8 @@ const montserrat = Montserrat({
   weight: ["100", "200", "300", "800", "900"],
 });
 
+import SmoothScrollProvider from "./SmoothScrollProvider";
+
 export const metadata: Metadata = {
   title: "Aura | Minimalist Luxury Architecture",
   description: "Experience the synergy of raw concrete, natural light, and organic minimalist design. A masterpiece of modern architecture.",
@@ -42,7 +44,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable} ${playfair.variable} ${bodoni.variable} ${montserrat.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SmoothScrollProvider>
+          {children}
+        </SmoothScrollProvider>
+      </body>
     </html>
   );
 }
