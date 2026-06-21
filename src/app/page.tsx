@@ -36,6 +36,80 @@ const showcaseProjects = [
   }
 ];
 
+const testimonials = [
+  {
+    id: 1,
+    author: "SANZPONT AWARD-WINNING - ARCHITECTURE FIRM",
+    lines: [
+      [
+        { text: "FÉLIX BROUGHT ", highlight: false },
+        { text: "CLARITY, INITIATIVE", highlight: true }
+      ],
+      [
+        { text: "AND RELIABILITY ", highlight: true },
+        { text: "TO A FAST-PACED", highlight: false }
+      ],
+      [{ text: "PRIVATE DEVELOPMENT", highlight: false }],
+      [{ text: "PRESENTATION. THE PROJECT", highlight: false }],
+      [{ text: "ENDED UP WINNING, A GREAT", highlight: false }],
+      [{ text: "OUTCOME FOR A COLLABORATION", highlight: false }],
+      [{ text: "WE GENUINELY RECOMMEND AND", highlight: false }],
+      [{ text: "WOULD REPEAT AGAIN.", highlight: false }]
+    ]
+  },
+  {
+    id: 2,
+    author: "NUA - ARCHITECTURE FIRM",
+    lines: [
+      [{ text: "FÉLIX HELPED US IDENTIFY OUR", highlight: false }],
+      [{ text: "STRENGTHS AND BRING MORE", highlight: false }],
+      [{ text: "CLARITY TO OUR POSITIONING. HIS", highlight: false }],
+      [{ text: "STRATEGIC PERSPECTIVE", highlight: true }],
+      [{ text: "EXCEEDED OUR EXPECTATIONS.", highlight: false }],
+      [{ text: "HIS INSIGHTS ON PROCESSES, CLIENT", highlight: false }],
+      [{ text: "ACQUISITION AND POSITIONING", highlight: false }],
+      [{ text: "WERE ESPECIALLY VALUABLE.", highlight: false }]
+    ]
+  },
+  {
+    id: 3,
+    author: "ROMINA ROSS - RO ARCHITECTURE",
+    lines: [
+      [{ text: "WHAT STOOD OUT MOST WAS", highlight: false }],
+      [
+        { text: "FÉLIX'S ", highlight: false },
+        { text: "SENSITIVITY AND ABILITY", highlight: true }
+      ],
+      [{ text: "TO UNDERSTAND THE ESSENCE OF MY", highlight: false }],
+      [{ text: "FIRM. THE WHOLE EXPERIENCE FELT", highlight: false }],
+      [{ text: "COHERENT, THOUGHTFUL AND", highlight: false }],
+      [{ text: "DEEPLY ALIGNED WITH THE TYPE OF", highlight: false }],
+      [{ text: "WORK I WANT TO COMMUNICATE.", highlight: false }]
+    ]
+  },
+  {
+    id: 4,
+    author: "SIMONE VELA - SV DESIGN",
+    lines: [
+      [
+        { text: "FÉLIX DELIVERED ", highlight: false },
+        { text: "EXCEPTIONAL", highlight: true }
+      ],
+      [
+        { text: "VISUAL WORK ", highlight: true },
+        { text: "UNDER EXTREMELY", highlight: false }
+      ],
+      [{ text: "DEMANDING TIMELINES. HIS", highlight: false }],
+      [{ text: "CREATIVE INPUT AND ABILITY TO", highlight: false }],
+      [{ text: "MAKE FAST, HIGH-QUALITY", highlight: false }],
+      [{ text: "DECISIONS ELEVATED THE OVERALL", highlight: false }],
+      [{ text: "PRESENTATION. THE FINAL RESULT", highlight: false }],
+      [{ text: "WAS EXCELLENT AND VISUALLY", highlight: false }],
+      [{ text: "SPECTACULAR.", highlight: false }]
+    ]
+  }
+];
+
 export default function Home() {
   const router = useRouter();
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -69,6 +143,10 @@ export default function Home() {
   const [hoveredProjectIdx, setHoveredProjectIdx] = useState(0);
   const [isHoveringShowcase, setIsHoveringShowcase] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Testimonials refs and state
+  const testimonialsSectionRef = useRef<HTMLDivElement>(null);
+  const [testimonialsInView, setTestimonialsInView] = useState(false);
 
   // Preload all 238 images
   useEffect(() => {
@@ -318,6 +396,21 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Scroll detector for Testimonials Section
+  useEffect(() => {
+    function handleScroll() {
+      const element = testimonialsSectionRef.current;
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.9) {
+        setTestimonialsInView(true);
+      }
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Update hovered index based on scroll changes
   useEffect(() => {
     if (!isHoveringShowcase || isMobile) return;
@@ -402,7 +495,12 @@ export default function Home() {
 
           <div className={styles.headerRight}>
             <Link href="#footer" className={styles.contactBtn}>
-              <span>GET IN TOUCH</span>
+              <span className={styles.flipText}>
+                <span className={styles.flipCube}>
+                  <span className={styles.flipFront}>GET IN TOUCH</span>
+                  <span className={styles.flipBack}>GET IN TOUCH</span>
+                </span>
+              </span>
               <span className={styles.arrowWrapper}>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
@@ -451,6 +549,38 @@ export default function Home() {
 
       {/* Editorial Text Flip Section */}
       <div ref={flipContainerRef} className={styles.flipSectionContainer}>
+        {/* Intro Block */}
+        <div className={styles.introBlock}>
+          <p className={styles.introText}>
+            PROPERTY FILMS, STILL IMAGERY AND INTERACTIVE<br />
+            EXPERIENCES FOR OFF-PLAN CAMPAIGNS.
+          </p>
+          <div className={styles.introButtons}>
+            <Link href="/about" className={styles.introBtnTeal}>
+              <span className={styles.flipText}>
+                <span className={styles.flipCube}>
+                  <span className={styles.flipFront}>ABOUT ME</span>
+                  <span className={styles.flipBack}>ABOUT ME</span>
+                </span>
+              </span>
+              <span className={styles.arrowWrapper}>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </Link>
+            <Link href="/about#process" className={styles.introBtnOutline}>
+              <span className={styles.flipText}>
+                <span className={styles.flipCube}>
+                  <span className={styles.flipFront}>MY PROCESS</span>
+                  <span className={styles.flipBack}>MY PROCESS</span>
+                </span>
+              </span>
+              <span className={styles.simpleArrow}>→</span>
+            </Link>
+          </div>
+        </div>
+
         <div className={styles.flipStickyWrapper}>
           <div className={styles.flipTextWrapper}>
             {/* Line 1 */}
@@ -480,7 +610,7 @@ export default function Home() {
 
 
       {/* SECTION 5: Project Showcase Stack */}
-      <div ref={containerRefShowcase} className={styles.scrollTrack5}>
+      <div ref={containerRefShowcase} id="projects" className={styles.scrollTrack5}>
         <div 
           className={styles.stickyContent5}
           onMouseMove={handleMouseMove}
@@ -580,6 +710,46 @@ export default function Home() {
           )}
         </div>
       </div>
+
+
+      {/* SECTION 6: Testimonials */}
+      <section 
+        ref={testimonialsSectionRef} 
+        className={styles.testimonialsSection}
+      >
+        <div className={styles.testimonialsHeader}>
+          <h2 className={styles.testimonialsTitleSerif}>WHAT PEOPLE</h2>
+          <h2 className={styles.testimonialsTitleSans}>SAY ABOUT ME</h2>
+        </div>
+
+        <div className={styles.testimonialsGrid}>
+          {testimonials.map((testimonial) => (
+            <div key={testimonial.id} className={styles.testimonialCard}>
+              <div className={styles.testimonialContent}>
+                {testimonial.lines.map((line, lIdx) => (
+                  <div 
+                    key={lIdx} 
+                    className={`${styles.testimonialLine} ${testimonialsInView ? styles.testimonialLineAnimate : ''}`}
+                    style={{ transitionDelay: `${lIdx * 120}ms` }}
+                  >
+                    {line.map((part, pIdx) => (
+                      <span 
+                        key={pIdx} 
+                        className={part.highlight ? styles.highlightText : ''}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <div className={styles.testimonialAuthor}>
+                {testimonial.author}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
 
       {/* Sleek Footer */}

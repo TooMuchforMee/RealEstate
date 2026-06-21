@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './projects.module.css';
+import ProjectGalleryClient from './ProjectGalleryClient';
 
 const projectDetails = {
   kensho: {
@@ -65,7 +66,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
           <div className={styles.headerRight}>
             <Link href="/#footer" className={styles.contactBtn}>
-              <span>GET IN TOUCH</span>
+              <span className={styles.flipText}>
+                <span className={styles.flipCube}>
+                  <span className={styles.flipFront}>GET IN TOUCH</span>
+                  <span className={styles.flipBack}>GET IN TOUCH</span>
+                </span>
+              </span>
               <span className={styles.arrowWrapper}>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
@@ -98,23 +104,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* GALLERY SECTION: Three spaced large portfolio images */}
-      <section className={styles.galleryContainer}>
-        <div className={styles.galleryGrid}>
-          {project.images.map((imgSrc, idx) => (
-            <div key={idx} className={styles.galleryImageWrapper}>
-              <Image
-                src={imgSrc}
-                alt={`${project.name} showcase detail ${idx + 1}`}
-                fill
-                sizes="100vw"
-                className={styles.galleryImage}
-                priority={idx === 0}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* GALLERY SECTION: Interactive sticky stacked card gallery */}
+      <ProjectGalleryClient images={project.images} projectName={project.name} />
 
       {/* Site Footer */}
       <footer className={styles.footer}>

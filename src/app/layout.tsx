@@ -27,7 +27,7 @@ const bodoni = Bodoni_Moda({
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["800", "900"],
+  weight: ["100", "200", "300", "800", "900"],
 });
 
 export const metadata: Metadata = {

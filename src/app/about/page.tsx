@@ -409,9 +409,15 @@ export default function AboutPage() {
       </div>
 
       {/* SECTION 4: Process Slider */}
-      <div ref={containerRef4} className={styles.scrollTrack4}>
+      <div ref={containerRef4} id="process" className={styles.scrollTrack4}>
         <div className={styles.stickyContent4}>
           
+          {/* Section Title and Line */}
+          <div className={styles.processHeader}>
+            <h2 className={styles.processTitle}>MY PROCESS</h2>
+            <div className={styles.processLine}></div>
+          </div>
+
           {/* Center Stationary Image Wrapper */}
           <div className={styles.processImageWrapper}>
             {processSteps.map((step, idx) => (

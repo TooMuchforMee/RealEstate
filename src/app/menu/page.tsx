@@ -46,7 +46,7 @@ export default function MenuPage() {
             onMouseEnter={() => setActiveItem('work')}
             onMouseLeave={() => setActiveItem(null)}
           >
-            <Link href="/#philosophy" className={styles.menuLink}>
+            <Link href="/#projects" className={styles.menuLink}>
               <div className={styles.wordCube}>
                 <div className={`${styles.wordFace} ${styles.front} ${styles.serifWord}`}>WORK</div>
                 <div className={`${styles.wordFace} ${styles.back} ${styles.sansWord}`}>WORK</div>
@@ -72,7 +72,7 @@ export default function MenuPage() {
             onMouseEnter={() => setActiveItem('process')}
             onMouseLeave={() => setActiveItem(null)}
           >
-            <Link href="/#materiality" className={styles.menuLink}>
+            <Link href="/about#process" className={styles.menuLink}>
               <div className={styles.wordCube}>
                 <div className={`${styles.wordFace} ${styles.front} ${styles.sansWord}`}>PROCESS</div>
                 <div className={`${styles.wordFace} ${styles.back} ${styles.serifWord}`}>PROCESS</div>
@@ -122,14 +122,14 @@ export default function MenuPage() {
       <footer className={styles.menuFooter}>
         <span className={styles.footerLabel}>CONNECT WITH ME</span>
         <div className={styles.socialIcons}>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="Instagram">
+          <a href="https://www.instagram.com/brajeshjoshii/" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="Instagram">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
               <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
               <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
             </svg>
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="LinkedIn">
+          <a href="https://www.linkedin.com/in/brajesh-joshi/" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="LinkedIn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
             </svg>
