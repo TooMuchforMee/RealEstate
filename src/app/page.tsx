@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { gsap } from 'gsap';
+import { useLenis } from 'lenis/react';
 
 // Easing / Opacity helper function
 function calculateOpacityForRange(progress: number, start: number, end: number): number {
@@ -117,6 +118,15 @@ export default function Home() {
   const [loadProgress, setLoadProgress] = useState(0);
   const [headerTheme, setHeaderTheme] = useState<'dark' | 'light'>('dark');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitted(true);
+  };
+
+  const lenis = useLenis();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,6 +134,31 @@ export default function Home() {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!lenis) return;
+    if (isContactOpen) {
+      lenis.stop();
+      document.body.style.overflow = 'hidden';
+    } else {
+      lenis.start();
+      document.body.style.overflow = '';
+    }
+    return () => {
+      lenis.start();
+      document.body.style.overflow = '';
+    };
+  }, [isContactOpen, lenis]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsContactOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -159,9 +194,12 @@ export default function Home() {
   const testimonialsGridRef = useRef<HTMLDivElement>(null);
   const [testimonialsInView, setTestimonialsInView] = useState(false);
 
-  // Preload all 238 images
+  // Contact ref
+  const contactSectionRef = useRef<HTMLDivElement>(null);
+
+  // Preload all 247 images
   useEffect(() => {
-    const totalFrames = 238;
+    const totalFrames = 247;
     let loadedCount = 0;
     const loadedImages: HTMLImageElement[] = new Array(totalFrames);
 
@@ -281,8 +319,8 @@ export default function Home() {
       // Calculate scroll progress from 0 to 1
       const progress = Math.max(0, Math.min(1, -rect.top / totalHeight));
 
-      // Calculate frame index from 1 to 238
-      const frameIndex = Math.max(1, Math.min(238, Math.floor(progress * 237) + 1));
+      // Calculate frame index from 1 to 247
+      const frameIndex = Math.max(1, Math.min(247, Math.floor(progress * 246) + 1));
 
       if (currentFrameRef.current !== frameIndex) {
         currentFrameRef.current = frameIndex;
@@ -459,6 +497,7 @@ export default function Home() {
         }
       );
     }
+
   }, []);
 
   // Update hovered index based on scroll changes
@@ -544,7 +583,7 @@ export default function Home() {
           </Link>
 
           <div className={styles.headerRight}>
-            <Link href="#footer" className={styles.contactBtn}>
+            <button onClick={() => setIsContactOpen(true)} className={styles.contactBtn} type="button">
               <span className={styles.flipText}>
                 <span className={styles.flipCube}>
                   <span className={styles.flipFront}>GET IN TOUCH</span>
@@ -556,7 +595,7 @@ export default function Home() {
                   <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
-            </Link>
+            </button>
 
             <Link href="/menu" className={styles.menuLines} aria-label="Menu">
               <span className={styles.line}></span>
@@ -802,17 +841,225 @@ export default function Home() {
       </section>
 
 
+      {/* SECTION 7: Get In Touch (Glassmorphic Popup Modal) */}
+      <div 
+        ref={contactSectionRef} 
+        id="contact" 
+        className={`${styles.contactSection} ${isContactOpen ? styles.contactSectionActive : ''}`}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setIsContactOpen(false);
+          }
+        }}
+      >
+        {/* Animated Background Glowing Blobs */}
+        <div className={styles.glowBlob1}></div>
+        <div className={styles.glowBlob2}></div>
+        <div className={styles.glowBlob3}></div>
+
+        <div className={styles.contactCard}>
+          {/* Close button */}
+          <button 
+            type="button"
+            className={styles.closeBtn} 
+            onClick={() => setIsContactOpen(false)}
+            aria-label="Close contact modal"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Left Column: Text & Info */}
+          <div className={styles.contactInfo}>
+            <span className={styles.contactSubtitle}>GET IN TOUCH</span>
+            <h2 className={styles.contactTitle}>
+              LET&apos;S SHAPE <br />
+              <span className={styles.serifText}>YOUR VISION</span>
+            </h2>
+            <p className={styles.contactDesc}>
+              Whether you are looking to launch an off-plan campaign, create a property film, or redefine your development&apos;s visual identity, we&apos;re here to help.
+            </p>
+
+            <div className={styles.contactDetailsList}>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>Email</span>
+                <a href="mailto:hello@aurainteractive.com" className={styles.detailValue}>
+                  hello@aurainteractive.com
+                </a>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>Location</span>
+                <span className={styles.detailValue}>Madrid, Spain — Worldwide</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>Social</span>
+                <div className={styles.socialLinks}>
+                  <a href="#instagram" className={styles.socialLink}>Instagram</a>
+                  <a href="#linkedin" className={styles.socialLink}>LinkedIn</a>
+                  <a href="#vimeo" className={styles.socialLink}>Vimeo</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Form */}
+          <div className={styles.contactFormContainer}>
+            {isSubmitted ? (
+              <div className={styles.successMessage}>
+                <div className={styles.successIcon}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <h3>Message Sent</h3>
+                <p>Thank you for reaching out. We will get back to you within 24 hours.</p>
+                <button onClick={() => setIsSubmitted(false)} className={styles.resetBtn}>
+                  Send another message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className={styles.contactForm}>
+                <div className={styles.formGroup}>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    required 
+                    placeholder=" " 
+                    className={styles.formInput} 
+                  />
+                  <label htmlFor="name" className={styles.formLabel}>Your Name</label>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    placeholder=" " 
+                    className={styles.formInput} 
+                  />
+                  <label htmlFor="email" className={styles.formLabel}>Email Address</label>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <select 
+                    id="projectType" 
+                    name="projectType" 
+                    required 
+                    className={styles.formSelect}
+                    defaultValue=""
+                  >
+                    <option value="" disabled hidden>Select Project Type</option>
+                    <option value="property-film">Property Film</option>
+                    <option value="still-imagery">Still Imagery</option>
+                    <option value="interactive-experience">Interactive Experience</option>
+                    <option value="other">Other / Collaboration</option>
+                  </select>
+                  <label htmlFor="projectType" className={styles.formLabelSelect}>Project Type</label>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <textarea 
+                    id="message" 
+                    name="message" 
+                    required 
+                    placeholder=" " 
+                    className={styles.formTextarea} 
+                    rows={4}
+                  />
+                  <label htmlFor="message" className={styles.formLabel}>Tell us about your project</label>
+                </div>
+
+                <button type="submit" className={styles.submitBtn}>
+                  <span className={styles.flipText}>
+                    <span className={styles.flipCube}>
+                      <span className={styles.flipFront}>SEND MESSAGE</span>
+                      <span className={styles.flipBack}>SEND MESSAGE</span>
+                    </span>
+                  </span>
+                  <span className={styles.arrowWrapper}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 5h8M5 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+
+
       {/* Sleek Footer */}
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
-          <div className={styles.footerLogo}>A U R A</div>
-          <div className={styles.footerLinks}>
-            <a href="#philosophy">Architecture</a>
-            <a href="#spaces">Spaces</a>
-            <a href="#materiality">Materiality</a>
-            <a href="#contact">Contact</a>
+          {/* Left Column */}
+          <div className={styles.footerLeft}>
+            <div className={styles.footerCtaText}>
+              <span className={styles.footerCtaLine1}>LET&apos;S SHAPE</span>
+              <span className={styles.footerCtaLine2}>
+                YOUR{' '}
+                <span className={styles.spinningWordContainer}>
+                  <span className={styles.spinningWords}>
+                    <span className={styles.spinWord}>VISION</span>
+                    <span className={styles.spinWord}>SPACES</span>
+                    <span className={styles.spinWord}>FUTURE</span>
+                    <span className={styles.spinWord}>VISION</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+
+            <div className={styles.footerContactInfo}>
+              <div className={styles.footerInfoItem}>
+                <span className={styles.footerInfoLabel}>EMAIL</span>
+                <a href="mailto:hello@aurainteractive.com" className={styles.footerInfoValue}>
+                  hello@aurainteractive.com
+                </a>
+              </div>
+              <div className={styles.footerInfoItem}>
+                <span className={styles.footerInfoLabel}>LOCATION</span>
+                <span className={styles.footerInfoValue}>Madrid, Spain — Worldwide</span>
+              </div>
+            </div>
           </div>
-          <p className={styles.copyright}>© 2026 Aura Architecture. All rights reserved.</p>
+
+          {/* Right Column */}
+          <div className={styles.footerRight}>
+            <Link href="/" className={styles.footerLogo}>
+              <span className={styles.logoLight}>felix</span>
+              <span className={styles.logoBold}>nieto.</span>
+            </Link>
+
+            {/* Social Icons below logo */}
+            <div className={styles.footerSocials}>
+              <a href="#instagram" className={styles.socialIconLink} aria-label="Instagram">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </a>
+              <a href="#linkedin" className={styles.socialIconLink} aria-label="LinkedIn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Lowest full-width copyright bar */}
+        <div className={styles.footerBottomBar}>
+          <div className={styles.footerBottomContainer}>
+            <p className={styles.copyright}>© 2026 Félix Nieto. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </main>
